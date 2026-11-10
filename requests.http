@@ -1,0 +1,51 @@
+### SeatLock: click "Send Request" above each block (needs the REST Client extension).
+### Run them top to bottom. Start the API and seed the database first.
+
+@base = http://localhost:8000
+
+### Health check
+GET {{base}}/health
+
+### 1. Register a user (409 the second time is fine)
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{"email": "riya@example.com", "password": "password123"}
+
+### 2. Log in (the token is reused automatically below)
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"email": "riya@example.com", "password": "password123"}
+
+### 3. List events
+GET {{base}}/events
+
+### 4. Seat map of event 1
+GET {{base}}/events/1/seats
+
+### 5. Hold seats 1 and 2 (run it twice: the second time you get the SAME booking back, status 200)
+# @name hold
+POST {{base}}/bookings
+Authorization: Bearer {{login.response.body.access_token}}
+Idempotency-Key: demo-hold-0001
+Content-Type: application/json
+
+{"event_id": 1, "seat_ids": [1, 2]}
+
+### 6. Pay for the booking
+POST {{base}}/bookings/{{hold.response.body.id}}/confirm
+Authorization: Bearer {{login.response.body.access_token}}
+Idempotency-Key: demo-pay-0001
+Content-Type: application/json
+
+{"payment_token": "tok_success"}
+
+### 7. My bookings
+GET {{base}}/bookings
+Authorization: Bearer {{login.response.body.access_token}}
+
+### 8. Cancel it (seats become free again)
+POST {{base}}/bookings/{{hold.response.body.id}}/cancel
+Authorization: Bearer {{login.response.body.access_token}}

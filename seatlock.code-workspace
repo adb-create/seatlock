@@ -1,0 +1,133 @@
+{
+  "folders": [
+    {
+      "name": "seatlock",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder:seatlock}/.venv/bin/python",
+    "python.envFile": "${workspaceFolder:seatlock}/.env",
+    "python.terminal.activateEnvironment": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+      "tests"
+    ],
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.pytest_cache": true
+    },
+    "[python]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "window.title": "SeatLock — ${activeEditorShort}"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "SeatLock API",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+          "app.main:app",
+          "--port",
+          "8000"
+        ],
+        "cwd": "${workspaceFolder:seatlock}",
+        "envFile": "${workspaceFolder:seatlock}/.env",
+        "justMyCode": true,
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Seed database (admin + sample event)",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "scripts.seed",
+        "cwd": "${workspaceFolder:seatlock}",
+        "envFile": "${workspaceFolder:seatlock}/.env",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Load test (500 users, 1 seat)",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "scripts.load_test",
+        "args": [
+          "--users",
+          "500"
+        ],
+        "cwd": "${workspaceFolder:seatlock}",
+        "envFile": "${workspaceFolder:seatlock}/.env",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "1. Set up project (venv + packages + .env)",
+        "type": "shell",
+        "command": "bash scripts/setup.sh",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      },
+      {
+        "label": "2. Start database (Docker)",
+        "type": "shell",
+        "command": "docker compose up -d db redis && echo 'Database ready on localhost:5432, Redis on 6379'",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      },
+      {
+        "label": "Stop database (Docker)",
+        "type": "shell",
+        "command": "docker compose stop db redis",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      },
+      {
+        "label": "Run API (auto-reload)",
+        "type": "shell",
+        "command": "set -a && . ./.env && set +a && .venv/bin/uvicorn app.main:app --reload --port 8000",
+        "isBackground": true,
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      },
+      {
+        "label": "Run tests",
+        "type": "shell",
+        "command": ".venv/bin/pytest -v",
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        },
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "charliermarsh.ruff",
+      "humao.rest-client",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}
