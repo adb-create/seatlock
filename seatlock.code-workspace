@@ -88,6 +88,15 @@
         }
       },
       {
+        "label": "2b. Create database (Postgres.app, no Docker)",
+        "type": "shell",
+        "command": "bash scripts/create_local_db.sh",
+        "problemMatcher": [],
+        "options": {
+          "cwd": "${workspaceFolder:seatlock}"
+        }
+      },
+      {
         "label": "Stop database (Docker)",
         "type": "shell",
         "command": "docker compose stop db redis",

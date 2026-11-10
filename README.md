@@ -76,7 +76,10 @@ You need **Python 3.10+** (`brew install python@3.12`) and **one** way to run Po
    choose `./.venv/bin/python`.
 2. **Start the database**
    - a. With Docker: *Tasks: Run Task* → **2. Start database (Docker)**
-   - b. With Homebrew instead (Redis is optional, the app works without it):
+   - b. With [Postgres.app](https://postgresapp.com) (no Docker or Homebrew needed): open it, click
+     **Initialize**, then *Tasks: Run Task* → **2b. Create database (Postgres.app, no Docker)**.
+     Set `REDIS_URL=` (empty) in `.env`.
+   - c. With Homebrew instead (Redis is optional, the app works without it):
      ```bash
      brew install postgresql@16 && brew services start postgresql@16
      psql postgres -c "CREATE ROLE booking LOGIN PASSWORD 'booking' CREATEDB;"
