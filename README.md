@@ -202,14 +202,20 @@ docker compose up -d && docker compose exec api python -m scripts.seed
 python -m scripts.load_test --users 500
 ```
 
-<!-- Replace with your own run -->
+Measured on an Apple Silicon MacBook Pro (one uvicorn process started from the VS Code debugger, PostgreSQL 18 via Postgres.app):
+
 | Metric | Result |
 |---|---|
 | Concurrent requests | 500 |
-| `201 Created` | _fill in_ |
-| `409 Conflict` | _fill in_ |
-| p50 / p95 latency | _fill in_ |
-| Double bookings | _fill in_ |
+| `201 Created` | **1** |
+| `409 Conflict` | **499** |
+| p50 / p95 latency | 973 ms / 1,806 ms |
+| Double bookings | **0** |
+| Wall time for all 500 | 2.0 s |
+
+Why is latency around a second? All 500 requests want the *same row*, so PostgreSQL deliberately lines
+them up one at a time: that queue is the correctness guarantee. Requests for different seats don't wait
+on each other. Running without the debugger and with more uvicorn workers would cut the numbers further.
 
 ## Design decisions (a.k.a. interview answers)
 
@@ -279,4 +285,4 @@ scripts/load_test.py      500-user race
 - Implemented idempotent hold and payment endpoints (Idempotency-Key + DB unique constraints),
   expiring seat holds with a non-blocking `SKIP LOCKED` sweeper, JWT auth and Redis rate limiting.
 - Verified correctness with multi-threaded race tests and a 500-concurrent-user load test
-  (_add your result_); CI runs the suite against PostgreSQL on every push.
+  (500 requests: exactly 1 booking, 499 clean rejections, 0 double bookings); CI runs the suite against PostgreSQL on every push.
