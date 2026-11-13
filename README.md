@@ -1,15 +1,13 @@
-# SeatLock — a seat booking API that never double-books
+# SeatLock — a ticket booking app that never double-books
 
-![tests](https://github.com/<your-username>/seatlock/actions/workflows/ci.yml/badge.svg)
+![tests](https://github.com/adb-create/seatlock/actions/workflows/ci.yml/badge.svg)
 
-> The CI workflow file is kept in `scripts/ci.yml`; `scripts/setup.sh` copies it into `.github/workflows/`.
-
-A backend for booking seats at concerts, movies or matches, in the style of BookMyShow.
+A ticket booking platform (REST API + live seat-map website) for concerts, movies or matches, in the style of BookMyShow.
 The interesting part is not the CRUD. It is what happens when **hundreds of people try
 to grab the same seat at the same second**, when a user **double-clicks "Pay"**, or when
 someone **holds seats and never pays**.
 
-**Stack:** Python · FastAPI · PostgreSQL · SQLAlchemy 2.0 · Redis · Docker · pytest · GitHub Actions
+**Stack:** Python · FastAPI · PostgreSQL · SQLAlchemy 2.0 · Redis · vanilla JavaScript · Docker · pytest · GitHub Actions
 
 ---
 
