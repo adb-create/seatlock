@@ -43,6 +43,23 @@
         "console": "integratedTerminal"
       },
       {
+        "name": "SeatLock (share on Wi-Fi)",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+          "app.main:app",
+          "--host",
+          "0.0.0.0",
+          "--port",
+          "8000"
+        ],
+        "cwd": "${workspaceFolder:seatlock}",
+        "envFile": "${workspaceFolder:seatlock}/.env",
+        "justMyCode": true,
+        "console": "integratedTerminal"
+      },
+      {
         "name": "Seed database (admin + sample event)",
         "type": "debugpy",
         "request": "launch",

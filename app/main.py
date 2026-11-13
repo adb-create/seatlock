@@ -1,9 +1,11 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager, suppress
+from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.config import settings
@@ -63,6 +65,16 @@ async def booking_error_handler(_: Request, exc: BookingError) -> JSONResponse:
 app.include_router(auth.router)
 app.include_router(events.router)
 app.include_router(bookings.router)
+
+# ---------- web interface ----------
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def web_app() -> FileResponse:
+    """The booking website (a single page that talks to the API above)."""
+    return FileResponse(STATIC_DIR / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/health", tags=["ops"])

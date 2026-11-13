@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SeatLock — book seats for live shows</title>
+  <meta name="description" content="Pick your exact seats for live shows in Kolkata. Seats are held for you while you pay.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css?v=7">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='8' width='24' height='18' rx='4' fill='%23F5C518'/%3E%3Crect x='4' y='8' width='24' height='18' rx='4' fill='none' stroke='%2316213E' stroke-width='3'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip-link" href="#view">Skip to content</a>
+
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="brand" href="#/" aria-label="SeatLock home">
+        <span class="brand__seat" aria-hidden="true"></span>
+        <span class="brand__name">SeatLock</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#/" data-nav="shows">Shows</a>
+        <a href="#/tickets" data-nav="tickets">My tickets</a>
+        <a href="#/admin" data-nav="admin" hidden>Add a show</a>
+      </nav>
+      <div class="account" id="account"></div>
+    </div>
+  </header>
+
+  <main id="view" class="view" tabindex="-1"></main>
+
+  <footer class="footer">
+    <p>SeatLock is a demo project. Payments are simulated and no money is charged.</p>
+    <p><a href="/docs">API documentation</a></p>
+  </footer>
+
+  <!-- Sign in / create account -->
+  <dialog id="auth-dialog" class="dialog" aria-labelledby="auth-title">
+    <form method="dialog" class="dialog__close-form">
+      <button class="icon-btn" aria-label="Close">&times;</button>
+    </form>
+    <h2 id="auth-title" class="dialog__title">Sign in to book</h2>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" class="tab" data-mode="login" aria-selected="true">Sign in</button>
+      <button type="button" role="tab" class="tab" data-mode="register" aria-selected="false">Create account</button>
+    </div>
+    <form id="auth-form" class="form" novalidate>
+      <label class="field">
+        <span>Email</span>
+        <input name="email" type="email" autocomplete="email" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input name="password" type="password" autocomplete="current-password" minlength="8" required>
+        <small class="field__hint" data-register-only hidden>At least 8 characters.</small>
+      </label>
+      <p class="form__error" id="auth-error" role="alert" hidden></p>
+      <button class="btn btn--primary btn--block" type="submit" id="auth-submit">Sign in</button>
+    </form>
+  </dialog>
+
+  <!-- Confirmation dialog (used instead of window.confirm) -->
+  <dialog id="confirm-dialog" class="dialog dialog--small" aria-labelledby="confirm-title">
+    <h2 id="confirm-title" class="dialog__title"></h2>
+    <p id="confirm-body"></p>
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--ghost" data-answer="no">Keep it</button>
+      <button type="button" class="btn btn--danger" data-answer="yes" id="confirm-yes">Cancel booking</button>
+    </div>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="/static/app.js?v=7" type="module"></script>
+</body>
+</html>

@@ -13,8 +13,8 @@ from app.services.booking_service import effective_status, utcnow
 router = APIRouter(prefix="/events", tags=["events"])
 
 
-def _seat_counts(db: Session, event_ids: list[int]) -> dict[int, tuple[int, int]]:
-    """{event_id: (total_seats, available_seats)} in a single query."""
+def _seat_counts(db: Session, event_ids: list[int]) -> dict[int, tuple]:
+    """{event_id: (total, available, min_price, max_price)} in a single query."""
     if not event_ids:
         return {}
     now = utcnow()
@@ -27,15 +27,20 @@ def _seat_counts(db: Session, event_ids: list[int]) -> dict[int, tuple[int, int]
             Seat.event_id,
             func.count(Seat.id),
             func.coalesce(func.sum(case((is_free, 1), else_=0)), 0),
+            func.min(Seat.price),
+            func.max(Seat.price),
         )
         .where(Seat.event_id.in_(event_ids))
         .group_by(Seat.event_id)
     ).all()
-    return {event_id: (int(total), int(free)) for event_id, total, free in rows}
+    return {
+        event_id: (int(total), int(free), low, high)
+        for event_id, total, free, low, high in rows
+    }
 
 
-def _to_out(event: Event, counts: dict[int, tuple[int, int]]) -> EventOut:
-    total, free = counts.get(event.id, (0, 0))
+def _to_out(event: Event, counts: dict[int, tuple]) -> EventOut:
+    total, free, low, high = counts.get(event.id, (0, 0, None, None))
     return EventOut(
         id=event.id,
         name=event.name,
@@ -43,6 +48,8 @@ def _to_out(event: Event, counts: dict[int, tuple[int, int]]) -> EventOut:
         starts_at=event.starts_at,
         total_seats=total,
         available_seats=free,
+        min_price=low,
+        max_price=high,
     )
 
 
@@ -61,10 +68,10 @@ def create_event(
             row=row,
             number=number,
             label=f"{row}{number}",
-            price=body.price,
+            price=body.premium_price if index < body.premium_rows else body.price,
             status=SeatStatus.AVAILABLE,
         )
-        for row in ascii_uppercase[: body.rows]
+        for index, row in enumerate(ascii_uppercase[: body.rows])
         for number in range(1, body.seats_per_row + 1)
     )
     db.commit()

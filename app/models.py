@@ -89,6 +89,16 @@ class Booking(Base):
     seats: Mapped[list["Seat"]] = relationship(
         secondary=booking_seats, lazy="selectin", order_by="Seat.id"
     )
+    # selectin = a separate SELECT, so it never interferes with FOR UPDATE locks.
+    event: Mapped["Event"] = relationship(lazy="selectin")
+
+    @property
+    def event_name(self) -> str:
+        return self.event.name
+
+    @property
+    def event_starts_at(self) -> datetime:
+        return self.event.starts_at
 
 
 class Seat(Base):

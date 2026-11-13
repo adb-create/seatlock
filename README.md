@@ -62,6 +62,25 @@ User B ──┘                          └─ waits for the lock ............
 
 All of this lives in [`app/services/booking_service.py`](app/services/booking_service.py).
 
+## The web app
+
+Open **http://localhost:8000** for the booking website (the API docs stay at `/docs`).
+
+| Page | What you can do |
+|---|---|
+| Shows | See what's on sale, prices and how many seats are left |
+| Seat map | Tap seats on a live map (it refreshes every 4 s, so seats other people are holding appear hatched), then hold them |
+| Checkout | 5-minute countdown, demo payment, an option to simulate a declined card, or release the seats |
+| My tickets | Confirmed, pending, cancelled and expired bookings; cancel a ticket |
+| Add a show | Organisers (admin accounts) create a show with standard and premium rows |
+
+It is plain HTML, CSS and JavaScript in `app/static/`, served by FastAPI, so there is no build step.
+Every action goes through the same REST API, including the Idempotency-Key on holds and payments.
+
+**Let friends on the same Wi-Fi book:** run **SeatLock (share on Wi-Fi)** from Run and Debug,
+allow incoming connections if macOS asks, then share `http://<your-mac's-IP>:8000`
+(find the IP in System Settings → Wi-Fi → Details).
+
 ## Run it in VS Code (macOS)
 
 The project opens in **its own VS Code window**, separate from your other projects:
@@ -150,6 +169,7 @@ curl -X POST localhost:8000/bookings/1/confirm -H "Authorization: Bearer $TOKEN"
 | POST | `/bookings/{id}/cancel` | owner | Cancel and free the seats |
 | GET | `/bookings` | user | My bookings |
 | GET | `/health` | anyone | Liveness + DB check |
+| GET | `/` | anyone | The booking website |
 
 Status codes used on purpose: `201` new hold, `200` replayed request, `402` payment
 declined, `404` not found *or not yours* (so ids can't be probed), `409` seat taken,
