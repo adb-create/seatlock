@@ -9,6 +9,8 @@ someone **holds seats and never pays**.
 
 **Stack:** Python · FastAPI · PostgreSQL · SQLAlchemy 2.0 · Redis · vanilla JavaScript · Docker · pytest · GitHub Actions
 
+![SeatLock seat map: sold seats, seats someone else is paying for, and your picks in yellow](docs/screenshots/seat-map.jpg)
+
 ---
 
 ## What it does
@@ -59,6 +61,14 @@ User B ──┘                          └─ waits for the lock ............
 4. **Write** the booking and mark the seats `HELD` in the same transaction → commit.
 
 All of this lives in [`app/services/booking_service.py`](app/services/booking_service.py).
+
+## Screenshots
+
+| Pick a show | Checkout with a 5-minute hold |
+|---|---|
+| ![Home page](docs/screenshots/home.jpg) | ![Checkout](docs/screenshots/checkout.jpg) |
+| **Your tickets** | **Dark mode** |
+| ![My tickets](docs/screenshots/tickets.jpg) | ![Seat map in dark mode](docs/screenshots/seat-map-dark.jpg) |
 
 ## The web app
 
